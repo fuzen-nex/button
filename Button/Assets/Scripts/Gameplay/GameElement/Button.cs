@@ -13,7 +13,7 @@ namespace Gameplay.GameElement
 
         public bool isPressed;
         private float remainTime = 0;
-        private const float _coolDownTime = 2;
+        private const float _coolDownTime = 1.5f;
         public void Initialize(Color unpressedColor, Color pressedColor, int buttonId)
         {
             this.buttonId = buttonId;

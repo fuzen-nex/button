@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Gameplay.GameElement
@@ -18,7 +20,9 @@ namespace Gameplay.GameElement
         [SerializeField] private Button buttonPrefab;
         [SerializeField] private float buttonYPosition;
         [SerializeField] private float buttonSize;
+        [SerializeField] private Sign signPrefab;
         [SerializeField] private List<ButtonConfig> buttonsConfig;
+        [SerializeField] private TextMeshProUGUI questionHint;
         
         private const int _cameraHeight = 5;
         
@@ -26,6 +30,7 @@ namespace Gameplay.GameElement
         
         private Wood wood;
         private List<Button> buttons;
+        private List<Sign> signs;
 
         #endregion
         public void Awake()
@@ -36,7 +41,8 @@ namespace Gameplay.GameElement
         private void Initialize()
         {
             InitializeWood();
-            InitializeButtons();
+            InitializeButtonsAndSigns();
+            questionHint.enabled = true;
         }
 
         private void InitializeWood()
@@ -46,12 +52,13 @@ namespace Gameplay.GameElement
             wood.transform.position += new Vector3(0, -(_cameraHeight - woodHeight / 2), 0);
         }
 
-        private void InitializeButtons()
+        private void InitializeButtonsAndSigns()
         {
             buttons = new List<Button>();
+            signs = new List<Sign>();
             const float left = -10.0f / 9 * 16 / 2;
             const float right = 10.0f / 9 * 16 / 2;
-            var numberOfButtons = buttonsConfig.Count;
+            var numberOfButtons = GetNumberOfButtons();
             for (var i = 0; i < numberOfButtons; i++)
             {
                 var button = Instantiate(buttonPrefab, transform);
@@ -64,6 +71,15 @@ namespace Gameplay.GameElement
                 localScale = new Vector3(localScale.x * buttonSize, localScale.y * buttonSize, localScale.z * buttonSize);
                 buttonTransform.localScale = localScale;
                 buttons.Add(button);
+                
+                var sign = Instantiate(signPrefab, transform);
+                var signTransform = sign.transform;
+                newPosition = signTransform.position;
+                newPosition = new Vector3(left + (right - left) / (numberOfButtons + 1) * (i + 1), buttonYPosition, newPosition.z);
+                signTransform.position = newPosition;
+                if (i == 0) sign.transform.Rotate(Vector3.forward, 20);
+                else if (i == numberOfButtons - 1) sign.transform.Rotate(Vector3.forward, -20);
+                signs.Add(sign);
             }
         }
         public int CheckHittingButtons(Vector2 pos)
@@ -84,13 +100,25 @@ namespace Gameplay.GameElement
             var dx = pos1.x - pos2.x;
             var dy = pos1.y - pos2.y;
             var dis = Math.Sqrt(dx * dx + dy * dy);
-            const float wristHittingMultiplier = 1.2f;
-            if (dis <= buttonSize / 2 * wristHittingMultiplier)
+            return dis <= buttonSize / 2;
+        }
+
+        public int GetNumberOfButtons()
+        {
+            return buttonsConfig.Count;
+        }
+
+        public void SetSigns(Question question)
+        {
+            var numberOfButtons = GetNumberOfButtons();
+            for (var i = 0; i < numberOfButtons; i++)
             {
-                Debug.Log(pos1 + " " + pos2 + " hit");
-                return true;
+                var color = question.Colors[i];
+                var shape = question.Shapes[i];
+                signs[i].SetSign(shape, color);
             }
-            return false;
+
+            questionHint.text = question.QueryString;
         }
     }
 }
