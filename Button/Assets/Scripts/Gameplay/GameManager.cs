@@ -1,44 +1,81 @@
 #nullable enable
 using Gameplay.GameElement;
 using Jazz;
-using TMPro;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class GameManager : MonoBehaviour
     {
-        [SerializeField] private BodyPoseDetectionManager bodyPoseDetectionManager = null!;
-        [SerializeField] private GameElements gameElements = null!;
-        [SerializeField] private QuestionManager questionManager = null!;
-        [SerializeField] private QuestionMode questionMode;
-        [SerializeField] private TextMeshProUGUI scoreText = null!;
+        
+        [SerializeField] private GameElements gameElementsPrefab = null!;
+        [SerializeField] private QuestionManager questionManagerPrefab = null!;
+        [SerializeField] private GameplayCanvas gameplayCanvasPrefab = null!;
+        
+        private GameElements gameElements = null!;
+        private QuestionManager questionManager = null!;
+        private GameplayCanvas gameplayCanvas = null!;
+        private QuestionMode questionMode;
+
+        private BodyPoseDetectionManager bodyPoseDetectionManager = null!;
         
         private bool startNextQuestion;
         private Question currentQuestion = new();
         private int score;
-        private void Awake()
+        private float remainTime;
+        private bool startedGame;
+        public void Initialize(BodyPoseDetectionManager newBodyPoseDetectionManager, QuestionMode newQuestionMode)
         {
-            Initialize();
+            bodyPoseDetectionManager = newBodyPoseDetectionManager;
+            questionMode = newQuestionMode;
+            InitializeElements();
             StartGame();
         }
-
         private void StartGame()
         {
             score = 0;
+            ChangeScore(0);
+            remainTime = 59.99f;
+            UpdateRemainTime();
             startNextQuestion = true;
+            startedGame = true;
+            gameplayCanvas.SetActiveScoreText(true);
+            gameplayCanvas.SetActiveRemainTime(true);
+            gameplayCanvas.SetActiveQuestionHint(false);
+            gameplayCanvas.SetActiveEndGameScore(false);
         }
-
+        
         private void FixedUpdate()
         {
+            if (startedGame == false) return;
+            remainTime -= Time.fixedDeltaTime;
+            UpdateRemainTime();
+            if (remainTime < 0)
+            {
+                EndGame();
+            }
             if (startNextQuestion)
             {
                 NewQuestion();
             }
         }
 
-        private void Initialize()
+        private void EndGame()
         {
+            startNextQuestion = false;
+            Destroy(gameElements.gameObject);
+            gameplayCanvas.SetEndGameScore("Score: " + score);
+            gameplayCanvas.SetActiveScoreText(false);
+            gameplayCanvas.SetActiveRemainTime(false);
+            gameplayCanvas.SetActiveEndGameScore(true);
+        }
+
+        private void InitializeElements()
+        {
+            gameElements = Instantiate(gameElementsPrefab, transform);
+            questionManager = Instantiate(questionManagerPrefab, transform);
+            gameplayCanvas = Instantiate(gameplayCanvasPrefab, transform);
+            gameElements.Initialize();
             bodyPoseDetectionManager.processed.captureAspectNormalizedDetection += HandleDetection;
         }
 
@@ -95,6 +132,7 @@ namespace Gameplay
             startNextQuestion = false;
             currentQuestion = questionManager.GenerateQuestion(gameElements.GetNumberOfButtons(), questionMode);
             gameElements.SetSigns(currentQuestion);
+            gameplayCanvas.SetQuestionHint(currentQuestion.QueryString);
             currentQuestion.QueryAudioSource.Play();
         }
         private void Answer(int buttonId)
@@ -117,7 +155,13 @@ namespace Gameplay
         private void ChangeScore(int delta)
         {
             score += delta;
-            scoreText.text = "Score: " + score;
+            gameplayCanvas.SetScoreText("Score: " + score);
+        }
+
+        private void UpdateRemainTime()
+        {
+            var time = (int)remainTime + 1;
+            gameplayCanvas.SetRemainTime("Time: " + time);
         }
     }
 }

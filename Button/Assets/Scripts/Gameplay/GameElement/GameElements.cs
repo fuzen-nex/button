@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 namespace Gameplay.GameElement
@@ -21,7 +20,6 @@ namespace Gameplay.GameElement
         [SerializeField] private float buttonSize;
         [SerializeField] private Sign signPrefab;
         [SerializeField] private List<ButtonConfig> buttonsConfig;
-        [SerializeField] private TextMeshProUGUI questionHint;
         
         private const int _cameraHeight = 5;
         
@@ -32,16 +30,25 @@ namespace Gameplay.GameElement
         private List<Sign> signs;
 
         #endregion
-        public void Awake()
-        {
-            Initialize();
-        }
 
-        private void Initialize()
+        public void Initialize()
         {
             InitializeWood();
             InitializeButtonsAndSigns();
-            questionHint.enabled = true;
+        }
+
+        private void OnDestroy()
+        {
+            Destroy(wood);
+            foreach (var button in buttons)
+            {
+                Destroy(button);
+            }
+
+            foreach (var sign in signs)
+            {
+                Destroy(sign);
+            }
         }
 
         private void InitializeWood()
@@ -113,8 +120,6 @@ namespace Gameplay.GameElement
                 var shape = question.Shapes[i];
                 signs[i].SetSign(shape, color);
             }
-
-            questionHint.text = question.QueryString;
         }
     }
 }
