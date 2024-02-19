@@ -5,13 +5,12 @@ namespace Gameplay
 {
     public class GameLobbyManager : MonoBehaviour
     {
-        [SerializeField] private BodyPoseDetectionManager bodyPoseDetectionManager = null!;
-
+        [SerializeField] private BodyPoseDetectionManager bodyPoseDetectionManager;
         [SerializeField] private GameManager gameManagerPrefab;
         
         private GameManager gameManager;
         private QuestionMode questionMode = QuestionMode.ColorAndShape;
-        private void Start()
+        private void Awake()
         {
             StartLobby();
         }
