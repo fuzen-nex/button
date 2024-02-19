@@ -14,12 +14,12 @@ namespace Gameplay.GameElement
         public bool isPressed;
         private float remainTime = 0;
         private const float _coolDownTime = 1.5f;
-        public void Initialize(Color unpressedColor, Color pressedColor, int buttonId)
+        public void Initialize(Color newUnpressedColor, Color newPressedColor, int newButtonId)
         {
-            this.buttonId = buttonId;
-            this.unpressedColor = unpressedColor;
-            this.pressedColor = pressedColor;
-            spriteRenderer.color = unpressedColor;
+            buttonId = newButtonId;
+            unpressedColor = newUnpressedColor;
+            pressedColor = newPressedColor;
+            spriteRenderer.color = newUnpressedColor;
             isPressed = false;
         }
 
@@ -40,7 +40,7 @@ namespace Gameplay.GameElement
         private void FixedUpdate()
         {
             if (remainTime > 0) remainTime -= Time.fixedDeltaTime;
-            if (remainTime < 0)
+            else
             {
                 SetPressed(false);
                 remainTime = 0;

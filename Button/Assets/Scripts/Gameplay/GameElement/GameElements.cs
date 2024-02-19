@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
+using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Gameplay.GameElement
@@ -84,12 +83,9 @@ namespace Gameplay.GameElement
         }
         public int CheckHittingButtons(Vector2 pos)
         {
-            foreach (var button in buttons)
+            foreach (var button in buttons.Where(button => IsHitting(pos, button.transform.position) && button.SetPressed(true)))
             {
-                if (IsHitting(pos, button.transform.position) && button.SetPressed(true))
-                {
-                    return button.buttonId;
-                }
+                return button.buttonId;
             }
             return -1;
         }

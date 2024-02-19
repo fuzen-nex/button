@@ -90,7 +90,7 @@ namespace Gameplay
             return newPosition;
         }
 
-        void NewQuestion()
+        private void NewQuestion()
         {
             startNextQuestion = false;
             currentQuestion = questionManager.GenerateQuestion(gameElements.GetNumberOfButtons(), questionMode);

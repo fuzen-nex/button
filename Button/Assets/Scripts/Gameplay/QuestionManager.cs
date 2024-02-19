@@ -35,7 +35,15 @@ namespace Gameplay
         private readonly List<Color> allColors = new() { Color.blue, Color.red, Color.green, Color.yellow };
         [SerializeField] private List<QueryAudioClip> queryAudioClips;
         [SerializeField] private AudioSource audioSource;
-        
+
+        private static readonly Dictionary<Color, string> ColorDict = new()
+        {
+            {Color.blue, "blue"},
+            {Color.red, "red"},
+            {Color.yellow, "yellow"},
+            {Color.green, "green"}
+        };
+
         public Question GenerateQuestion(int numberOfChoices, QuestionMode mode)
         {
             Shuffle();
@@ -79,32 +87,31 @@ namespace Gameplay
             }
         }
 
-        private string GetStringFromColor(Color color)
+        private static string GetStringFromColor(Color color)
         {
-            if (color == Color.blue) return "blue";
-            if (color == Color.red) return "red";
-            if (color == Color.yellow) return "yellow";
-            if (color == Color.green) return "green";
-            return "error";
+            return ColorDict[color];
         }
 
-        private string GetStringFromShape(SignShape shape)
+        private static string GetStringFromShape(SignShape shape)
         {
-            if (shape == SignShape.Circle) return "circle";
-            if (shape == SignShape.Rectangle) return "rectangle";
-            if (shape == SignShape.Square) return "square";
-            if (shape == SignShape.Triangle) return "triangle";
-            return "error";
+            return shape switch
+            {
+                SignShape.Circle => "circle",
+                SignShape.Rectangle => "rectangle",
+                SignShape.Square => "square",
+                SignShape.Triangle => "triangle",
+                _ => "error"
+            };
         }
 
         private void Shuffle()
         {
-            for (int i = 1; i < allShapes.Count; i++)
+            for (var i = 1; i < allShapes.Count; i++)
             {
                 var p = Random.Range(0, i + 1);
                 (allShapes[p], allShapes[i]) = (allShapes[i], allShapes[p]);
             }
-            for (int i = 1; i < allColors.Count; i++)
+            for (var i = 1; i < allColors.Count; i++)
             {
                 var p = Random.Range(0, i + 1);
                 (allColors[p], allColors[i]) = (allColors[i], allColors[p]);

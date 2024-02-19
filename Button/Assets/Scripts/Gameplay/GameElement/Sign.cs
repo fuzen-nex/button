@@ -5,7 +5,8 @@ namespace Gameplay.GameElement
     public class Sign : MonoBehaviour
     {
         [SerializeField] private SignChoice signChoice;
-        void Initialize()
+
+        private void Initialize()
         {
         
         }
