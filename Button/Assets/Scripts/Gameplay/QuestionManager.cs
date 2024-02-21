@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gameplay.GameElement;
+using Gameplay.GameElements;
 using UnityEngine;
 using Random = UnityEngine.Random;
 

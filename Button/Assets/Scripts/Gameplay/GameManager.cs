@@ -1,5 +1,5 @@
 #nullable enable
-using Gameplay.GameElement;
+using Gameplay.GameElements;
 using Jazz;
 using UnityEngine;
 
@@ -8,11 +8,11 @@ namespace Gameplay
     public class GameManager : MonoBehaviour
     {
         
-        [SerializeField] private GameElements gameElementsPrefab = null!;
+        [SerializeField] private GameElements.GameElements gameElementsPrefab = null!;
         [SerializeField] private QuestionManager questionManagerPrefab = null!;
         [SerializeField] private GameplayCanvas gameplayCanvasPrefab = null!;
         
-        private GameElements gameElements = null!;
+        private GameElements.GameElements gameElements = null!;
         private QuestionManager questionManager = null!;
         private GameplayCanvas gameplayCanvas = null!;
         private QuestionMode questionMode;

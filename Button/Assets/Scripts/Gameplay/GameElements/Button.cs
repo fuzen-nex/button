@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace Gameplay.GameElement
+namespace Gameplay.GameElements
 {
     public class Button : MonoBehaviour
     {

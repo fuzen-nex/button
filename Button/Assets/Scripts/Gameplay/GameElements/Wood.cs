@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Gameplay.GameElement
+namespace Gameplay.GameElements
 {
     public class Wood : MonoBehaviour
     {

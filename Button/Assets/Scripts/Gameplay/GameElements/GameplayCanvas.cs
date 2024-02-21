@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace Gameplay.GameElement
+namespace Gameplay.GameElements
 {
     public class GameplayCanvas : MonoBehaviour
     {
