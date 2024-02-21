@@ -431,6 +431,7 @@ MonoBehaviour:
   gameManagerPrefab: {fileID: 3545544869207513069, guid: 05c9646b45f0244f388dad716e391c31, type: 3}
   gameModeSelectorPrefab: {fileID: 93265788536760172, guid: acae6aa1314c743b78bc365a99483074, type: 3}
   mainCamera: {fileID: 519420031}
+  numberOfPlayers: 2
 --- !u!4 &2008716411
 Transform:
   m_ObjectHideFlags: 0

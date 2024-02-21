@@ -100,7 +100,6 @@ namespace Gameplay.GameElements
 
         private bool IsHitting(Vector2 pos1, Vector2 pos2)
         {
-            
             var dx = pos1.x - pos2.x;
             var dy = pos1.y - pos2.y;
             var dis = Math.Sqrt(dx * dx + dy * dy);

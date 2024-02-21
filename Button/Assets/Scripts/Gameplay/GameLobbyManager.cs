@@ -9,6 +9,7 @@ namespace Gameplay
         [SerializeField] private GameManager gameManagerPrefab;
         [SerializeField] private GameModeSelector gameModeSelectorPrefab;
         [SerializeField] private Camera mainCamera;
+        [SerializeField] private int numberOfPlayers;
         
         private GameManager gameManager;
         private GameModeSelector gameModeSelector;
@@ -45,21 +46,24 @@ namespace Gameplay
         private void ChooseGameMode()
         {
             gameModeSelector = Instantiate(gameModeSelectorPrefab, transform);
-            gameModeSelector.Initialize(bodyPoseDetectionManager, mainCamera);
+            gameModeSelector.Initialize(bodyPoseDetectionManager, mainCamera, numberOfPlayers);
             gameModeSelector.CaptureQuestionMode += ChoseGameMode;
         }
 
         private void ChoseGameMode(QuestionMode mode)
         {
             questionMode = mode;
-            Destroy(gameModeSelector.gameObject);
-            gameModeSelector = null;
+            if (gameModeSelector is not null)
+            {
+                Destroy(gameModeSelector.gameObject);
+                gameModeSelector = null;
+            }
             StartGame();
         }
         private void StartGame()
         {
             gameManager = Instantiate(gameManagerPrefab, transform);
-            gameManager.Initialize(bodyPoseDetectionManager, questionMode);
+            gameManager.Initialize(bodyPoseDetectionManager, questionMode, numberOfPlayers);
         }
     }
 }

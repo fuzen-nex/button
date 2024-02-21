@@ -20,7 +20,13 @@ namespace Nex
             BodyPoseDetectionManager aBodyPoseDetectionManager
         )
         {
+            var displayMode = PreviewFrame.DisplayMode.Full;
+            var previewContainer = fullFramePreviewContainer;
+            previewContainer.SetActive(true);
+            var previewFrame = Instantiate(previewFramePrefab, previewContainer.transform);
+            previewFrame.Initialize(displayMode, aCvDetectionManager, aBodyPoseDetectionManager);
             // This only works for showing preview for individual players.
+            /*
             for (var playerIndex = 0; playerIndex < aNumOfPlayers; playerIndex++)
             {
                 var displayMode = aNumOfPlayers == 1 ? PreviewFrame.DisplayMode.Full :
@@ -32,6 +38,7 @@ namespace Nex
                 var previewFrame = Instantiate(previewFramePrefab, previewContainer.transform);
                 previewFrame.Initialize(displayMode, aCvDetectionManager, aBodyPoseDetectionManager);
             }
+            */
         }
 
         #endregion

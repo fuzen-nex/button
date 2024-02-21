@@ -16,7 +16,8 @@ namespace Gameplay
         private QuestionManager questionManager = null!;
         private GameplayCanvas gameplayCanvas = null!;
         private QuestionMode questionMode;
-
+        private int numberOfPlayers;
+        
         private BodyPoseDetectionManager bodyPoseDetectionManager = null!;
         
         private bool startNextQuestion;
@@ -25,9 +26,10 @@ namespace Gameplay
         private float remainTime;
         private bool startedGame;
         private bool endedGame;
-        public void Initialize(BodyPoseDetectionManager newBodyPoseDetectionManager, QuestionMode newQuestionMode)
+        public void Initialize(BodyPoseDetectionManager newBodyPoseDetectionManager, QuestionMode newQuestionMode, int newNumberOfPlayers)
         {
             bodyPoseDetectionManager = newBodyPoseDetectionManager;
+            numberOfPlayers = newNumberOfPlayers;
             questionMode = newQuestionMode;
             InitializeElements();
             StartGame();
@@ -89,18 +91,21 @@ namespace Gameplay
 
         private void HandleDetection(BodyPoseDetectionResult detectionResult)
         {
-            const int playerIndex = 0;
-            var leftHand = HandCalculation.CalculateHandPosition(detectionResult, playerIndex, Hand.Left);
-            var rightHand = HandCalculation.CalculateHandPosition(detectionResult, playerIndex, Hand.Right);
-            if (leftHand != null)
+            for (var playerIndex = 0; playerIndex < numberOfPlayers; playerIndex++)
             {
-                var buttonId = gameElements.CheckHittingButtons((Vector2)leftHand);
-                if (buttonId != -1) Answer(buttonId);
-            }
-            if (rightHand != null)
-            {
-                var buttonId = gameElements.CheckHittingButtons((Vector2)rightHand);
-                if (buttonId != -1) Answer(buttonId);
+                var leftHand = HandCalculation.CalculateHandPosition(detectionResult, playerIndex, Hand.Left);
+                var rightHand = HandCalculation.CalculateHandPosition(detectionResult, playerIndex, Hand.Right);
+                if (leftHand != null)
+                {
+                    var buttonId = gameElements.CheckHittingButtons((Vector2)leftHand);
+                    if (buttonId != -1) Answer(buttonId);
+                }
+
+                if (rightHand != null)
+                {
+                    var buttonId = gameElements.CheckHittingButtons((Vector2)rightHand);
+                    if (buttonId != -1) Answer(buttonId);
+                }
             }
         }
 
@@ -117,13 +122,11 @@ namespace Gameplay
             Debug.Log("answering button " + buttonId + " correct answer is " + currentQuestion.Answer);
             if (buttonId == currentQuestion.Answer)
             {
-                Debug.Log("correct");
                 ChangeScore(10);
                 startNextQuestion = true;
             }
             else
             {
-                Debug.Log("wrong");
                 ChangeScore(-5);
                 currentQuestion.QueryAudioSource.Play();
             }
