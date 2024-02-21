@@ -48,6 +48,7 @@ MonoBehaviour:
   woodHeight: 2.5
   buttonPrefab: {fileID: 5719312512903597906, guid: e38e8cfc1032c4e8ca5d9c864334fb82, type: 3}
   buttonYPosition: -2.6
+  buttonPressedYPosition: -3.3
   buttonSize: 2.8
   signPrefab: {fileID: 9214597880084777647, guid: 8b5d9c3bbe84041e4a3b22ff49a7b339, type: 3}
   buttonsConfig:
@@ -57,4 +58,3 @@ MonoBehaviour:
     pressedColor: {r: 0, g: 0, b: 0.33333334, a: 1}
   - unpressedColor: {r: 0.19607843, g: 1, b: 0.19607843, a: 1}
     pressedColor: {r: 0, g: 0.33333334, b: 0, a: 1}
-  questionHint: {fileID: 0}

@@ -24,6 +24,7 @@ namespace Gameplay
         private int score;
         private float remainTime;
         private bool startedGame;
+        private bool endedGame;
         public void Initialize(BodyPoseDetectionManager newBodyPoseDetectionManager, QuestionMode newQuestionMode)
         {
             bodyPoseDetectionManager = newBodyPoseDetectionManager;
@@ -41,13 +42,13 @@ namespace Gameplay
             startedGame = true;
             gameplayCanvas.SetActiveScoreText(true);
             gameplayCanvas.SetActiveRemainTime(true);
-            gameplayCanvas.SetActiveQuestionHint(false);
+            gameplayCanvas.SetActiveQuestionHint(true);
             gameplayCanvas.SetActiveEndGameScore(false);
         }
         
         private void FixedUpdate()
         {
-            if (startedGame == false) return;
+            if (startedGame == false || endedGame) return;
             remainTime -= Time.fixedDeltaTime;
             UpdateRemainTime();
             if (remainTime < 0)
@@ -62,7 +63,9 @@ namespace Gameplay
 
         private void EndGame()
         {
+            endedGame = true;
             startNextQuestion = false;
+            bodyPoseDetectionManager.processed.captureAspectNormalizedDetection -= HandleDetection;
             Destroy(gameElements.gameObject);
             gameplayCanvas.SetEndGameScore("Score: " + score);
             gameplayCanvas.SetActiveScoreText(false);

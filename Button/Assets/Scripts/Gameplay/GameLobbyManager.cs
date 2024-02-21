@@ -7,8 +7,11 @@ namespace Gameplay
     {
         [SerializeField] private BodyPoseDetectionManager bodyPoseDetectionManager;
         [SerializeField] private GameManager gameManagerPrefab;
+        [SerializeField] private GameModeSelector gameModeSelectorPrefab;
+        [SerializeField] private Camera mainCamera;
         
         private GameManager gameManager;
+        private GameModeSelector gameModeSelector;
         private QuestionMode questionMode = QuestionMode.ColorAndShape;
         private void Awake()
         {
@@ -19,7 +22,17 @@ namespace Gameplay
         {
             if (Input.GetKeyDown(KeyCode.R))
             {
-                Destroy(gameManager.gameObject);
+                if (gameModeSelector is not null)
+                {
+                    Destroy(gameModeSelector.gameObject);
+                    gameModeSelector = null;
+                }
+
+                if (gameManager is not null)
+                {
+                    Destroy(gameManager.gameObject);
+                    gameManager = null;
+                }
                 StartLobby();
             }
         }
@@ -27,12 +40,21 @@ namespace Gameplay
         private void StartLobby()
         {
             ChooseGameMode();
-            StartGame();
         }
 
         private void ChooseGameMode()
         {
-            questionMode = QuestionMode.ColorAndShape;
+            gameModeSelector = Instantiate(gameModeSelectorPrefab, transform);
+            gameModeSelector.Initialize(bodyPoseDetectionManager, mainCamera);
+            gameModeSelector.CaptureQuestionMode += ChoseGameMode;
+        }
+
+        private void ChoseGameMode(QuestionMode mode)
+        {
+            questionMode = mode;
+            Destroy(gameModeSelector.gameObject);
+            gameModeSelector = null;
+            StartGame();
         }
         private void StartGame()
         {

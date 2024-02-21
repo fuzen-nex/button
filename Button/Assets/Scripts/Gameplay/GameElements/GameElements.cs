@@ -17,6 +17,7 @@ namespace Gameplay.GameElements
         [SerializeField] private float woodHeight;
         [SerializeField] private Button buttonPrefab;
         [SerializeField] private float buttonYPosition;
+        [SerializeField] private float buttonPressedYPosition;
         [SerializeField] private float buttonSize;
         [SerializeField] private Sign signPrefab;
         [SerializeField] private List<ButtonConfig> buttonsConfig;
@@ -68,7 +69,7 @@ namespace Gameplay.GameElements
             for (var i = 0; i < numberOfButtons; i++)
             {
                 var button = Instantiate(buttonPrefab, transform);
-                button.Initialize(buttonsConfig[i].unpressedColor, buttonsConfig[i].pressedColor, i);
+                button.Initialize(buttonsConfig[i].unpressedColor, buttonsConfig[i].pressedColor, i, buttonYPosition, buttonPressedYPosition);
                 var buttonTransform = button.transform;
                 var newPosition = buttonTransform.position;
                 newPosition = new Vector3(left + (right - left) / (numberOfButtons + 1) * (i + 1), buttonYPosition, newPosition.z);
