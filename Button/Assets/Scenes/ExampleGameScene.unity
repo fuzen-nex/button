@@ -432,6 +432,7 @@ MonoBehaviour:
   gameModeSelectorPrefab: {fileID: 93265788536760172, guid: acae6aa1314c743b78bc365a99483074, type: 3}
   mainCamera: {fileID: 519420031}
   numberOfPlayers: 2
+  numberOfButtons: 4
 --- !u!4 &2008716411
 Transform:
   m_ObjectHideFlags: 0
@@ -495,6 +496,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 501007064886749745, guid: 0274e3b471944447fae96700c83d2581, type: 3}
+      propertyPath: gameLobbyManager
+      value: 
+      objectReference: {fileID: 2008716410}
     - target: {fileID: 1789922406403630455, guid: 0274e3b471944447fae96700c83d2581, type: 3}
       propertyPath: m_Name
       value: DetectionManager

@@ -1,4 +1,3 @@
-using DG.Tweening;
 using UnityEngine;
 
 namespace Gameplay.GameElements
@@ -11,38 +10,38 @@ namespace Gameplay.GameElements
         
         private Color pressedColor, unpressedColor;
 
-        public bool isPressed;
+        public bool previouslyPressed;
+        public bool isNowPressed;
         private float remainTime = 0;
-        private const float _coolDownTime = 1.5f;
+        private const float _coolDownTime = 0.4f;
         private float normalYPosition;
         private float pressedYPosition;
+        public bool ableToHit;
+        
         public void Initialize(Color newUnpressedColor, Color newPressedColor, int newButtonId, float yPos, float pressedYPos)
         {
             buttonId = newButtonId;
             unpressedColor = newUnpressedColor;
             pressedColor = newPressedColor;
             spriteRenderer.color = newUnpressedColor;
-            isPressed = false;
+            previouslyPressed = isNowPressed = false;
             normalYPosition = yPos;
             pressedYPosition = pressedYPos;
+            ableToHit = true;
         }
 
-        public bool SetPressed(bool pressed)
+        public void SetPressed(bool pressed)
         {
-            var pos = gameObject.transform.position;
             if (pressed)
             {
-                if (remainTime > 0) return false;
-                isPressed = true;
-                spriteRenderer.color = pressedColor;
-                remainTime = _coolDownTime;
-                gameObject.transform.position = new Vector3(pos.x, pressedYPosition, pos.z);
-                return true;
+                ResetRemainTime();
+                ableToHit = false;
             }
-            isPressed = false;
-            spriteRenderer.color = unpressedColor;
-            gameObject.transform.position = new Vector3(pos.x, normalYPosition, pos.z);
-            return true;
+            else ableToHit = true;
+            
+            var pos = gameObject.transform.position;
+            spriteRenderer.color = pressed ? pressedColor : unpressedColor;
+            gameObject.transform.position = new Vector3(pos.x, pressed ? pressedYPosition : normalYPosition, pos.z);
         }
         private void FixedUpdate()
         {
@@ -52,6 +51,11 @@ namespace Gameplay.GameElements
                 SetPressed(false);
                 remainTime = 0;
             }
+        }
+
+        private void ResetRemainTime()
+        {
+            remainTime = _coolDownTime;
         }
     }
 }

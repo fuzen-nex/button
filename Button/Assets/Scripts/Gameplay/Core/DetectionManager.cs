@@ -1,5 +1,7 @@
 #nullable enable
 
+using Gameplay;
+using Gameplay.GameLobby;
 using Jazz;
 using UnityEngine;
 
@@ -13,17 +15,19 @@ namespace Nex
         [SerializeField] PreviewsManager previewsManager = null!;
         [SerializeField] SetupStateManager setupStateManager = null!;
         [SerializeField] SetupUI setupUI = null!;
-        
+        [SerializeField] private GameLobbyManager gameLobbyManager = null!;
+
+        private int numOfPlayers; // Here is where we can config 1P / 2P game.
         #region Life Cycle
 
         void Awake()
         {
+            numOfPlayers = gameLobbyManager.GetNumberOfPlayers();
             Initialize();
         }
 
         void Initialize()
         {
-            var numOfPlayers = 2; // Here is where we can config 1P / 2P game.
 
             ConfigMdk(numOfPlayers);
 
@@ -35,9 +39,9 @@ namespace Nex
             setupStateManager.SetTrackingEnabled(true);
         }
 
-        void ConfigMdk(int numOfPlayers)
+        void ConfigMdk(int numNumOfPlayers)
         {
-            cvDetectionManager.numOfPlayers = numOfPlayers;
+            cvDetectionManager.numOfPlayers = numNumOfPlayers;
             CvDetectionManager.gameViewportController.SetUseDetectionViewportForPlayerTracking(true);
         }
 

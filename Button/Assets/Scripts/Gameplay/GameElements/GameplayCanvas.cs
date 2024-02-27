@@ -9,6 +9,8 @@ namespace Gameplay.GameElements
         [SerializeField] private TextMeshProUGUI questionHint;
         [SerializeField] private TextMeshProUGUI endGameScore;
         [SerializeField] private TextMeshProUGUI remainTime;
+        [SerializeField] private TextMeshProUGUI getReadyText;
+        [SerializeField] private TextMeshProUGUI countDown;
         
         public void SetActiveScoreText(bool active)
         {
@@ -41,6 +43,47 @@ namespace Gameplay.GameElements
         public void SetRemainTime(string text)
         {
             remainTime.text = text;
+        }
+        public void SetActiveGetReadyText(bool active)
+        {
+            getReadyText.gameObject.SetActive(active);
+        }
+        public void SetActiveCountDown(bool active)
+        {
+            countDown.gameObject.SetActive(active);
+        }
+        public void SetCountDown(string text)
+        {
+            countDown.text = text;
+        }
+
+        public void CountDownSetUp()
+        {
+            SetActiveCountDown(true);
+            SetActiveGetReadyText(true);
+            SetActiveEndGameScore(false);
+            SetActiveQuestionHint(false);
+            SetActiveRemainTime(false);
+            SetActiveScoreText(false);
+        }
+        public void StartGameSetUp()
+        {
+            SetActiveCountDown(false);
+            SetActiveGetReadyText(false);
+            SetActiveEndGameScore(false);
+            SetActiveQuestionHint(true);
+            SetActiveRemainTime(true);
+            SetActiveScoreText(true);
+        }
+
+        public void EndGameSetUp()
+        {
+            SetActiveCountDown(false);
+            SetActiveGetReadyText(false);
+            SetActiveEndGameScore(true);
+            SetActiveQuestionHint(false);
+            SetActiveRemainTime(false);
+            SetActiveScoreText(false);
         }
     }
 }

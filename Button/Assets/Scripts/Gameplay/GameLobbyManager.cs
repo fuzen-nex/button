@@ -10,6 +10,7 @@ namespace Gameplay
         [SerializeField] private GameModeSelector gameModeSelectorPrefab;
         [SerializeField] private Camera mainCamera;
         [SerializeField] private int numberOfPlayers;
+        [SerializeField] private int numberOfButtons;
         
         private GameManager gameManager;
         private GameModeSelector gameModeSelector;
@@ -63,7 +64,12 @@ namespace Gameplay
         private void StartGame()
         {
             gameManager = Instantiate(gameManagerPrefab, transform);
-            gameManager.Initialize(bodyPoseDetectionManager, questionMode, numberOfPlayers);
+            gameManager.Initialize(bodyPoseDetectionManager, questionMode, numberOfPlayers, numberOfButtons);
+        }
+
+        public int GetNumberOfPlayers()
+        {
+            return numberOfPlayers;
         }
     }
 }

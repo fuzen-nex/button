@@ -1,10 +1,18 @@
 #nullable enable
+using System;
 using Gameplay.GameElements;
 using Jazz;
 using UnityEngine;
 
 namespace Gameplay
 {
+    public enum GameState
+    {
+        Initializing,
+        CountingDown,
+        Started,
+        Ended,
+    }
     public class GameManager : MonoBehaviour
     {
         
@@ -17,6 +25,7 @@ namespace Gameplay
         private GameplayCanvas gameplayCanvas = null!;
         private QuestionMode questionMode;
         private int numberOfPlayers;
+        private int numberOfButtons;
         
         private BodyPoseDetectionManager bodyPoseDetectionManager = null!;
         
@@ -24,15 +33,20 @@ namespace Gameplay
         private Question currentQuestion = new();
         private int score;
         private float remainTime;
-        private bool startedGame;
-        private bool endedGame;
-        public void Initialize(BodyPoseDetectionManager newBodyPoseDetectionManager, QuestionMode newQuestionMode, int newNumberOfPlayers)
+
+        private GameState gameState;
+        private float countDownTime;
+        
+        public void Initialize(BodyPoseDetectionManager newBodyPoseDetectionManager, QuestionMode newQuestionMode,
+            int newNumberOfPlayers, int newNumberOfButtons)
         {
+            gameState = GameState.Initializing;
+            countDownTime = 2.99f;
             bodyPoseDetectionManager = newBodyPoseDetectionManager;
             numberOfPlayers = newNumberOfPlayers;
+            numberOfButtons = newNumberOfButtons;
             questionMode = newQuestionMode;
-            InitializeElements();
-            StartGame();
+            InitializeCanvas();
         }
         private void StartGame()
         {
@@ -41,46 +55,69 @@ namespace Gameplay
             remainTime = 59.99f;
             UpdateRemainTime();
             startNextQuestion = true;
-            startedGame = true;
-            gameplayCanvas.SetActiveScoreText(true);
-            gameplayCanvas.SetActiveRemainTime(true);
-            gameplayCanvas.SetActiveQuestionHint(true);
-            gameplayCanvas.SetActiveEndGameScore(false);
+            gameplayCanvas.StartGameSetUp();
         }
         
         private void FixedUpdate()
         {
-            if (startedGame == false || endedGame) return;
-            remainTime -= Time.fixedDeltaTime;
-            UpdateRemainTime();
-            if (remainTime < 0)
+            switch (gameState)
             {
-                EndGame();
-            }
-            if (startNextQuestion)
-            {
-                NewQuestion();
+                case GameState.Initializing:
+                    break;
+                case GameState.CountingDown:
+                    countDownTime -= Time.fixedDeltaTime;
+                    if (countDownTime < 0)
+                    {
+                        InitializeElements();
+                        gameState = GameState.Started;
+                        StartGame();
+                    }
+                    else UpdateCountDown();
+                    break;
+                case GameState.Started:
+                {
+                    remainTime -= Time.fixedDeltaTime;
+                    UpdateRemainTime();
+                    if (remainTime < 0)
+                    {
+                        gameState = GameState.Ended;
+                        EndGame();
+                    }
+
+                    if (startNextQuestion)
+                    {
+                        NewQuestion();
+                    }
+
+                    break;
+                }
+                case GameState.Ended:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
         private void EndGame()
         {
-            endedGame = true;
-            startNextQuestion = false;
             bodyPoseDetectionManager.processed.captureAspectNormalizedDetection -= HandleDetection;
             Destroy(gameElements.gameObject);
             gameplayCanvas.SetEndGameScore("Score: " + score);
-            gameplayCanvas.SetActiveScoreText(false);
-            gameplayCanvas.SetActiveRemainTime(false);
-            gameplayCanvas.SetActiveEndGameScore(true);
+            gameplayCanvas.EndGameSetUp();
         }
 
+        private void InitializeCanvas()
+        {
+            gameplayCanvas = Instantiate(gameplayCanvasPrefab, transform);
+            gameplayCanvas.CountDownSetUp();
+            gameState = GameState.CountingDown;
+        }
+        
         private void InitializeElements()
         {
             gameElements = Instantiate(gameElementsPrefab, transform);
             questionManager = Instantiate(questionManagerPrefab, transform);
-            gameplayCanvas = Instantiate(gameplayCanvasPrefab, transform);
-            gameElements.Initialize();
+            gameElements.Initialize(numberOfButtons);
             bodyPoseDetectionManager.processed.captureAspectNormalizedDetection += HandleDetection;
         }
 
@@ -91,6 +128,7 @@ namespace Gameplay
 
         private void HandleDetection(BodyPoseDetectionResult detectionResult)
         {
+            gameElements.ButtonsGetReady();
             for (var playerIndex = 0; playerIndex < numberOfPlayers; playerIndex++)
             {
                 var leftHand = HandCalculation.CalculateHandPosition(detectionResult, playerIndex, Hand.Left);
@@ -107,12 +145,14 @@ namespace Gameplay
                     if (buttonId != -1) Answer(buttonId);
                 }
             }
+
+            gameElements.UpdateButtonsStates();
         }
 
         private void NewQuestion()
         {
             startNextQuestion = false;
-            currentQuestion = questionManager.GenerateQuestion(gameElements.GetNumberOfButtons(), questionMode);
+            currentQuestion = questionManager.GenerateQuestion(numberOfButtons, questionMode);
             gameElements.SetSigns(currentQuestion);
             gameplayCanvas.SetQuestionHint(currentQuestion.QueryString);
             currentQuestion.QueryAudioSource.Play();
@@ -142,6 +182,12 @@ namespace Gameplay
         {
             var time = (int)remainTime + 1;
             gameplayCanvas.SetRemainTime("Time: " + time);
+        }
+
+        private void UpdateCountDown()
+        {
+            var time = (int)countDownTime + 1;
+            gameplayCanvas.SetCountDown(time.ToString());
         }
     }
 }

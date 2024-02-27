@@ -21,7 +21,8 @@ namespace Gameplay.GameElements
         [SerializeField] private float buttonSize;
         [SerializeField] private Sign signPrefab;
         [SerializeField] private List<ButtonConfig> buttonsConfig;
-        
+
+        private int numberOfButtons;
         private const int _cameraHeight = 5;
         
         #region Game Elements
@@ -32,8 +33,9 @@ namespace Gameplay.GameElements
 
         #endregion
 
-        public void Initialize()
+        public void Initialize(int newNumberOfButtons)
         {
+            numberOfButtons = newNumberOfButtons;
             InitializeWood();
             InitializeButtonsAndSigns();
         }
@@ -65,7 +67,6 @@ namespace Gameplay.GameElements
             signs = new List<Sign>();
             const float left = -10.0f / 9 * 16 / 2;
             const float right = 10.0f / 9 * 16 / 2;
-            var numberOfButtons = GetNumberOfButtons();
             for (var i = 0; i < numberOfButtons; i++)
             {
                 var button = Instantiate(buttonPrefab, transform);
@@ -91,14 +92,41 @@ namespace Gameplay.GameElements
         }
         public int CheckHittingButtons(Vector2 pos)
         {
-            foreach (var button in buttons.Where(button => IsHitting(pos, button.transform.position) && button.SetPressed(true)))
+            foreach (var button in buttons)
             {
-                return button.buttonId;
+                var buttonPos = button.transform.position;
+                if (IsNotHit(pos, buttonPos)) continue;
+                if (IsNewHit(pos, buttonPos))
+                {
+                    button.isNowPressed = true;
+                    if (button.ableToHit)
+                    {
+                        return button.buttonId;
+                    }
+                }
+                else if (button.previouslyPressed) button.isNowPressed = true;
             }
             return -1;
         }
 
-        private bool IsHitting(Vector2 pos1, Vector2 pos2)
+        public void ButtonsGetReady()
+        {
+            foreach (var button in buttons)
+            {
+                button.previouslyPressed = button.isNowPressed;
+                button.isNowPressed = false;
+            }
+        }
+
+        public void UpdateButtonsStates()
+        {
+            foreach (var button in buttons.Where(button => button.isNowPressed))
+            {
+                button.SetPressed(true);
+            }
+        }
+        
+        private bool IsNewHit(Vector2 pos1, Vector2 pos2)
         {
             var dx = pos1.x - pos2.x;
             var dy = pos1.y - pos2.y;
@@ -106,14 +134,16 @@ namespace Gameplay.GameElements
             return dis <= buttonSize / 2;
         }
 
-        public int GetNumberOfButtons()
+        private bool IsNotHit(Vector2 pos1, Vector2 pos2)
         {
-            return buttonsConfig.Count;
+            var dx = pos1.x - pos2.x;
+            var dy = pos1.y - pos2.y;
+            var dis = Math.Sqrt(dx * dx + dy * dy);
+            return dis >= buttonSize / 2 * 1.2f;
         }
 
         public void SetSigns(Question question)
         {
-            var numberOfButtons = GetNumberOfButtons();
             for (var i = 0; i < numberOfButtons; i++)
             {
                 var color = question.Colors[i];
