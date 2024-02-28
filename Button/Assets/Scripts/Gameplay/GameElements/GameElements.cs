@@ -83,10 +83,13 @@ namespace Gameplay.GameElements
                 var sign = Instantiate(signPrefab, transform);
                 var signTransform = sign.transform;
                 newPosition = signTransform.position;
-                newPosition = new Vector3(left + (right - left) / (numberOfButtons + 1) * (i + 1), buttonYPosition, newPosition.z);
+                newPosition = new Vector3(left + (right - left) / (numberOfButtons + 1) * (i + 1), buttonYPosition, newPosition.z + 1);
                 signTransform.position = newPosition;
-                if (i == 0) sign.transform.Rotate(Vector3.forward, 20);
-                else if (i == numberOfButtons - 1) sign.transform.Rotate(Vector3.forward, -20);
+                if (i == 0) sign.InitializeAngle(Vector3.forward * 20, Vector3.forward * 80);
+                else if (i == numberOfButtons - 1) sign.InitializeAngle(Vector3.forward * -20, Vector3.forward * -80);
+                else if (i * 2 < numberOfButtons - 1) sign.InitializeAngle(Vector3.zero, Vector3.forward * 70);
+                else if (i * 2 > numberOfButtons - 1) sign.InitializeAngle(Vector3.zero, Vector3.forward * -70);
+                else sign.InitializeAngle(Vector3.zero, Vector3.right * -80);
                 signs.Add(sign);
             }
         }
